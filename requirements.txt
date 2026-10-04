@@ -1,0 +1,8 @@
+pandas
+numpy
+scikit-learn
+joblib
+fastapi
+uvicorn
+pydantic
+great-expectations==1.23.2

@@ -1,0 +1,18 @@
+{
+  "required_columns": [
+    "purchase_hour",
+    "purchase_day_of_week",
+    "purchase_month",
+    "purchase_year",
+    "approval_delay_hours",
+    "estimated_delivery_days"
+  ],
+  "ranges": {
+    "purchase_hour": [0, 23],
+    "purchase_day_of_week": [0, 6],
+    "purchase_month": [1, 12],
+    "purchase_year": [2017, 2030],
+    "approval_delay_hours": [0, null],
+    "estimated_delivery_days": [0, null]
+  }
+}
