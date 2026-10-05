@@ -1,10 +1,64 @@
-from fastapi import FastAPI
+import time
+
+from fastapi import FastAPI, Request
+from prometheus_client import Counter, Histogram, generate_latest
+from fastapi.responses import Response
 
 from config.schema import OrderRequest, PredictionResponse
 from src.predict import predict
 
 
 app = FastAPI(title="Olist Late Delivery Prediction API")
+
+
+REQUEST_COUNT = Counter(
+    "api_requests_total",
+    "Total number of API requests",
+    ["method", "endpoint", "status"],
+)
+
+REQUEST_LATENCY = Histogram(
+    "api_request_latency_seconds",
+    "API request latency in seconds",
+    ["method", "endpoint"],
+)
+
+PREDICTION_COUNT = Counter(
+    "predictions_total",
+    "Total number of predictions",
+    ["prediction"],
+)
+
+
+@app.middleware("http")
+async def monitor_requests(request: Request, call_next):
+    start_time = time.time()
+
+    try:
+        response = await call_next(request)
+
+        REQUEST_COUNT.labels(
+            method=request.method,
+            endpoint=request.url.path,
+            status=response.status_code,
+        ).inc()
+
+        return response
+
+    except Exception:
+        REQUEST_COUNT.labels(
+            method=request.method,
+            endpoint=request.url.path,
+            status=500,
+        ).inc()
+
+        raise
+
+    finally:
+        REQUEST_LATENCY.labels(
+            method=request.method,
+            endpoint=request.url.path,
+        ).observe(time.time() - start_time)
 
 
 @app.get("/")
@@ -21,18 +75,40 @@ def health():
 def model_info():
     return {
         "model_name": "random_forest",
-        "model_version": "1"
+        "model_version": "1",
     }
+
+
+@app.get("/metrics")
+def metrics():
+    return Response(
+        generate_latest(),
+        media_type="text/plain",
+    )
 
 
 @app.post("/predict", response_model=PredictionResponse)
 def predict_order(order: OrderRequest):
-    return predict(order.model_dump())
+    result = predict(order.model_dump())
+
+    PREDICTION_COUNT.labels(
+        prediction=result["prediction"]
+    ).inc()
+
+    return result
 
 
 @app.post("/predict/batch")
 def predict_batch(orders: list[OrderRequest]):
-    return [
-        predict(order.model_dump())
-        for order in orders
-    ]
+    results = []
+
+    for order in orders:
+        result = predict(order.model_dump())
+
+        PREDICTION_COUNT.labels(
+            prediction=result["prediction"]
+        ).inc()
+
+        results.append(result)
+
+    return results
