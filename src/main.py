@@ -1,8 +1,8 @@
 import time
 
 from fastapi import FastAPI, Request
-from prometheus_client import Counter, Histogram, generate_latest
 from fastapi.responses import Response
+from prometheus_client import Counter, Histogram, generate_latest
 
 from config.schema import OrderRequest, PredictionResponse
 from src.predict import predict
@@ -10,6 +10,10 @@ from src.predict import predict
 
 app = FastAPI(title="Olist Late Delivery Prediction API")
 
+
+# =========================
+# Monitoring Metrics
+# =========================
 
 REQUEST_COUNT = Counter(
     "api_requests_total",
@@ -28,6 +32,11 @@ PREDICTION_COUNT = Counter(
     "Total number of predictions",
     ["prediction"],
 )
+
+
+# =========================
+# Request Monitoring
+# =========================
 
 
 @app.middleware("http")
@@ -61,6 +70,11 @@ async def monitor_requests(request: Request, call_next):
         ).observe(time.time() - start_time)
 
 
+# =========================
+# API Endpoints
+# =========================
+
+
 @app.get("/")
 def root():
     return {"message": "Olist inference service is running"}
@@ -75,7 +89,7 @@ def health():
 def model_info():
     return {
         "model_name": "random_forest",
-        "model_version": "1",
+        "model_version": "1.0",
     }
 
 
