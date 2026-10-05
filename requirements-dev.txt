@@ -1,3 +1,5 @@
 pytest
 httpx
 dvc
+great-expectations==1.23.2
+mlflow==3.16.1
