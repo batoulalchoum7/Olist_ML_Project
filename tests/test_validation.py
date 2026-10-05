@@ -28,4 +28,3 @@ def test_invalid_hour():
 
     with pytest.raises(ValueError):
         validate_input(order)
-        

@@ -14,4 +14,3 @@ class PredictionResponse(BaseModel):
     prediction: str
     probability: float
     model_version: str
-    

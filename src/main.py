@@ -91,9 +91,7 @@ def metrics():
 def predict_order(order: OrderRequest):
     result = predict(order.model_dump())
 
-    PREDICTION_COUNT.labels(
-        prediction=result["prediction"]
-    ).inc()
+    PREDICTION_COUNT.labels(prediction=result["prediction"]).inc()
 
     return result
 
@@ -105,9 +103,7 @@ def predict_batch(orders: list[OrderRequest]):
     for order in orders:
         result = predict(order.model_dump())
 
-        PREDICTION_COUNT.labels(
-            prediction=result["prediction"]
-        ).inc()
+        PREDICTION_COUNT.labels(prediction=result["prediction"]).inc()
 
         results.append(result)
 

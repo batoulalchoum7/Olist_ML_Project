@@ -20,7 +20,7 @@ def log_model():
         mlflow.sklearn.log_model(
             model,
             name="random_forest_model",
-            skops_trusted_types=["sklearn.tree._tree.Tree"]
+            skops_trusted_types=["sklearn.tree._tree.Tree"],
         )
 
         print("Model logged successfully.")
@@ -28,4 +28,3 @@ def log_model():
 
 if __name__ == "__main__":
     log_model()
-    

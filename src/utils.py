@@ -12,9 +12,7 @@ def setup_logger():
     logger.setLevel(logging.INFO)
 
     if not logger.handlers:
-        formatter = logging.Formatter(
-            "%(asctime)s - %(levelname)s - %(message)s"
-        )
+        formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
 
         console_handler = logging.StreamHandler(sys.stdout)
         console_handler.setFormatter(formatter)

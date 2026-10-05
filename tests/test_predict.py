@@ -17,4 +17,3 @@ def test_prediction_output():
     assert "probability" in result
     assert result["prediction"] in ["late", "on time"]
     assert 0 <= result["probability"] <= 1
-    

@@ -26,7 +26,6 @@ def predict(order):
     start_time = time.time()
 
     logger.info(f"Prediction request: {order}")
-    
 
     try:
         validate_input(order)
@@ -35,10 +34,7 @@ def predict(order):
 
         df = imputer.transform(df)
 
-        df = pd.DataFrame(
-            scaler.transform(df),
-            columns=feature_list
-        )
+        df = pd.DataFrame(scaler.transform(df), columns=feature_list)
 
         probability = model.predict_proba(df)[0][1]
         prediction = "late" if probability >= THRESHOLD else "on time"

@@ -1,13 +1,10 @@
 import json
 import pandas as pd
-import great_expectations as gx
 from pathlib import Path
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-EXPECTATIONS_PATH = (
-    BASE_DIR / "config" / "expectations" / "order_expectations.json"
-)
+EXPECTATIONS_PATH = BASE_DIR / "config" / "expectations" / "order_expectations.json"
 
 
 def load_expectations():
@@ -19,19 +16,12 @@ def validate_input(order):
     expectations = load_expectations()
     df = pd.DataFrame([order])
 
-    context = gx.get_context()
-
     required_columns = expectations["required_columns"]
 
-    missing_columns = [
-        col for col in required_columns
-        if col not in df.columns
-    ]
+    missing_columns = [col for col in required_columns if col not in df.columns]
 
     if missing_columns:
-        raise ValueError(
-            f"Missing required columns: {missing_columns}"
-        )
+        raise ValueError(f"Missing required columns: {missing_columns}")
 
     if df[required_columns].isnull().any().any():
         raise ValueError("Input contains missing values.")
